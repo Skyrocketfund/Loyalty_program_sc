@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./library/Withdrawable.sol";
 
-contract NFT is ERC721, Ownable, Withdrawable {
+contract NFT is ERC721Enumerable, Ownable, Withdrawable {
     using SafeERC20 for IERC20;
     
     IERC20 public mainToken;
@@ -41,6 +41,15 @@ contract NFT is ERC721, Ownable, Withdrawable {
             emit Mint(_to, _lastTokenId);
         }
         tokenId_ += _amountNFT;
+    }
+
+    function getIdNFT(address _owner) public view returns (uint256[] memory) {
+        uint256 _size = balanceOf(_owner);
+        uint256[] memory _ids = new uint256[](_size);
+        for (uint256 i = 0; i < _size; i++) {
+            _ids[i] = tokenOfOwnerByIndex(_owner, i);
+        }
+        return _ids;
     }
 
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
