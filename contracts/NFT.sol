@@ -7,11 +7,13 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./library/Withdrawable.sol";
+import "./NFTPass_ID.sol";
 
 contract NFT is ERC721Enumerable, Ownable, Withdrawable {
     using SafeERC20 for IERC20;
     
     IERC20 public mainToken;
+    NFTPassID public nftPassID;
     uint256 internal tokenId_;
     string internal baseURI_;
 
@@ -22,12 +24,14 @@ contract NFT is ERC721Enumerable, Ownable, Withdrawable {
     event Mint(address to, uint256 tokenId);
     event SetProductPrices(uint256[] _productIds, uint256[] _prices);
 
-    constructor(string memory _name, string memory _symbol, string memory _baseUri, IERC20 _mainToken) ERC721(_name, _symbol) {
+    constructor(string memory _name, string memory _symbol, string memory _baseUri, IERC20 _mainToken, NFTPassID _nftPassID) ERC721(_name, _symbol) {
         baseURI_ = _baseUri;
         mainToken = _mainToken;
+        nftPassID = _nftPassID;
     }
 
     function buyNFT(address _to, uint256 _productId, uint256 _price) external {
+        require(nftPassID.balanceOf(msg.sender) == 1, "NFT: You have not nftPassID");
         require(productPrices[_productId] == _price, "NFT: Incorrect price");
         mainToken.transferFrom(msg.sender, address(this), _price);
         _mintTokens(_to, 1);

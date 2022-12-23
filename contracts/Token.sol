@@ -9,7 +9,7 @@ contract Token is ERC20, Ownable {
         _mint(msg.sender, 100 * 10 ** decimals());
     }
 
-    function makeAirdrop(address[] memory _addresses, uint256 _amount) public onlyOwner {
+    function makeAirdropTokens(address[] memory _addresses, uint256 _amount) public onlyOwner {
         for (uint32 i = 0; i < _addresses.length; i++) {
             _transfer(msg.sender, _addresses[i], _amount);
         }
